@@ -1,0 +1,18 @@
+{
+  "name": "nomad-live-api",
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nomad-live/nomad-live-api.git"
+  },
+  "dependencies": {
+    "cine-io": "~0.2.1",
+    "restify": "~3.0.0"
+  },
+  "devDependencies": {
+    "mocha": "~2.2.5"
+  },
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha"
+  }
+}
