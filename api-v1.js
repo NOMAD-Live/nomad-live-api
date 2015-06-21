@@ -2,7 +2,8 @@
 
 var restify = require('restify');
 var CineIO = require('cine-io');
-var client = CineIO.init({secretKey: '960dc609fab24e922c3605d1152f48e4'});
+
+var client = CineIO.init(require('./secrets.json'));
 var Storage = require('./storage');
 
 var exports = module.exports;
@@ -13,7 +14,15 @@ var STREAM_COUNT_LIMIT = 3;
 
 exports.sync = function () {
   client.streams.index(function (err, streams) {
-    Storage.sync(streams);
+    if (!err) {
+
+      Storage.sync(streams);
+
+    } else {
+
+      console.log("[SimpleSync] error:cine-io");
+      console.log(err);
+    }
   });
 }
 
@@ -45,8 +54,12 @@ exports.sync_cache = function (req, res, next) {
 exports.get_streams = function (req, res, next) {
 
   console.log("[Get] getting all...");
+
   var all = Storage.getAll();
+  res.header('X-Stream-Count', all.length);
+  res.header('X-Stream-Count-Limit', STREAM_COUNT_LIMIT);
   res.json(200, all);
+  
   console.log("[Get] done all");
   next();
 }
@@ -79,27 +92,33 @@ exports.create_stream = function (req, res, next) {
     password = Math.random().toString(36).substr(2, 5);
   }
 
-  var progress = Storage.size() + "/" + STREAM_COUNT_LIMIT;
+  var current_size = Storage.size();
+
+  var progress = current_size + "/" + STREAM_COUNT_LIMIT;
 
   console.log("[Create] total " + progress );
 
-  if (Storage.size() < STREAM_COUNT_LIMIT) {
+  if (current_size < STREAM_COUNT_LIMIT) {
 
     console.log("[Create] adding...");
 
     client.streams.create(function (err, stream) {
 
       if (!err) {
-        
-        Storage.add(stream, password, function (password) {
+
+        Storage.add(stream, password, function (last_beat) {
 
           var url = stream.id + "?p=" + password;
 
           console.log("[Create] done " + url);
 
+          res.header('X-Stream-Count', current_size + 1);
+          res.header('X-Stream-Count-Limit', STREAM_COUNT_LIMIT);
+
           res.json(200, {
             id: stream.id,
-            password: password
+            password: password,
+            last_beat: last_beat
           });
         });
 

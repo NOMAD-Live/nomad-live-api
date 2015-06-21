@@ -10,7 +10,9 @@
     "restify": "~3.0.0"
   },
   "devDependencies": {
-    "mocha": "~2.2.5"
+    "mocha": "~2.2.5",
+    "is-online": "~4.0.2",
+    "is-up": "~1.0.4"
   },
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha"
