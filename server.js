@@ -29,9 +29,11 @@ server.post('/streams', api.create_stream);
 server.get('/streams', api.get_streams);
 server.get('/streams/sync', api.sync_cache);
 server.post('/streams/sync', api.sync_cache);
+server.get('/streams/clean', api.clean_streams);
+server.post('/streams/clean', api.clean_streams);
 server.get('/stream/:stream_id', api.get_stream);
 server.post('/stream/:stream_id', api.heartbeat);
-server.del('/stream/:stream_id', api.delete_stream);
+server.del('/stream/:stream_id', api.destroy_stream);
 
 server.listen(4242, function () {
   console.log('%s listening at %s', server.name, server.url);

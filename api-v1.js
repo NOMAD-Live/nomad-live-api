@@ -10,7 +10,7 @@ var exports = module.exports;
 
 
 var STREAM_COUNT_LIMIT = 3;
-
+var STREAM_EXPIRATION_TIME = 15; // In seconds
 
 exports.sync = function () {
   client.streams.index(function (err, streams) {
@@ -26,6 +26,37 @@ exports.sync = function () {
   });
 }
 
+exports.clean_streams = function (req, res, next) {
+
+  console.log("[Clean] cleaning older than " + STREAM_EXPIRATION_TIME + "s...");
+
+  var to_destroy = Storage.get_old(STREAM_EXPIRATION_TIME);
+  var destroyed = [];
+
+  to_destroy.forEach(function (item) {
+
+    console.log("[Clean] deleting... " + item);
+
+    client.streams.destroy(item, function (err, stream) {
+   
+      if (!err) {
+        Storage.destroy(item);
+        destroyed.push(item);
+        console.log("[Clean] deleted " + item);
+      }
+      
+    });
+  });
+  
+  if (to_destroy.length === 0) {
+    console.log("[Clean] nothing to do");
+    res.json(304, {deleting:to_destroy});  
+  }
+  
+  res.json(202, {deleting:to_destroy});  
+  next();
+}
+
 exports.sync_cache = function (req, res, next) {
 
   console.log("[Sync] syncing...");
@@ -38,7 +69,7 @@ exports.sync_cache = function (req, res, next) {
       Storage.sync(streams);
 
       console.log("[Sync] done");
-      res.json(200, Storage.getAll());
+      res.json(200, Storage.get_all());
 
     } else {
 
@@ -55,7 +86,7 @@ exports.get_streams = function (req, res, next) {
 
   console.log("[Get] getting all...");
 
-  var all = Storage.getAll();
+  var all = Storage.get_all();
   res.header('X-Stream-Count', all.length);
   res.header('X-Stream-Count-Limit', STREAM_COUNT_LIMIT);
   res.json(200, all);
@@ -140,7 +171,7 @@ exports.create_stream = function (req, res, next) {
   next();
 }
 
-exports.delete_stream = function (req, res, next) {
+exports.destroy_stream = function (req, res, next) {
 
   var id = req.params.stream_id;
   var pass = req.params.password || req.params.p;

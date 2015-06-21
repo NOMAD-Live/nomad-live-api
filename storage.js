@@ -63,11 +63,10 @@ exports.has = function (id) {
   return _storage.hasOwnProperty(id);
 }
 
-exports.getAll = function () {
+exports.get_all = function () {
   var output = [], temp;
 
   for (var item in _storage) {
-    console.log(item);
     temp = {};
     temp.id = _storage[item].stream.id;
     temp.last_beat = _storage[item].last_beat;
@@ -75,6 +74,27 @@ exports.getAll = function () {
   }
 
   console.log("[Storage] getall:done " + output);
+  return output;
+}
+
+/*
+ * Gets all streams older than X seconds.
+ */
+exports.get_old = function (seconds) {
+
+  var ttl = seconds * 1000; // 15 seconds
+  var now = Date.now();
+  var valid_time = new Date(now - ttl);
+  var output = [];
+
+  for (var item in _storage) {
+
+    var beat = _storage[item].last_beat;
+    if (beat < valid_time) {
+      output.push(item);
+    }
+  }
+
   return output;
 }
 
