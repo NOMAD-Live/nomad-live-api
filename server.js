@@ -10,7 +10,7 @@ var server = restify.createServer({
 
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.authorizationParser());
-server.use(restify.queryParser());
+server.use(restify.queryParser({ mapParams: true }));
 server.use(restify.gzipResponse());
 server.use(restify.throttle({
   burst: 100,
