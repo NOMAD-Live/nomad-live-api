@@ -23,15 +23,17 @@ exports.sync = function (streams) {
 
 exports.add = function (stream, password, next) {
 
+  var last_beat = Date.now();
+
   _storage[stream.id] = {};
   _storage[stream.id].stream = stream;
   _storage[stream.id].password = password;
-  _storage[stream.id].last_beat = Date.now();
+  _storage[stream.id].last_beat = last_beat;
 
   console.log("[Storage] add:done " + stream.id + "?p=" + password);
 
   if (typeof(next) == 'function') {
-    next(password);
+    next(last_beat);
   }
 }
 
