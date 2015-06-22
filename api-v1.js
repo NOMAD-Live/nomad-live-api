@@ -3,7 +3,13 @@
 var restify = require('restify');
 var CineIO = require('cine-io');
 
-var client = CineIO.init(require('./secrets.json'));
+try {
+  var conf = require('./secrets.json');
+} catch (e) {
+  var conf = {secretKey: process.env.CINE_IO_SECRET_KEY};
+}
+
+var client = CineIO.init(conf);
 var Storage = require('./storage');
 
 var exports = module.exports;
