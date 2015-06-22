@@ -19,7 +19,7 @@
     "is-up": "~1.0.4"
   },
   "scripts": {
-    "start": "node server.js",
+    "start": "node server.js || nodejs server.js",
     "test": "./node_modules/mocha/bin/mocha",
     "deploy": "git push production",
     "fresh-deploy": "git remote add production ubuntu@api.nomadlive.tv:/home/ubuntu/nomad-live-api.git && git push production;"
