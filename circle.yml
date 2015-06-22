@@ -1,0 +1,5 @@
+deployment:
+  production:
+    branch: production
+    commands:
+      - npm run fresh-deploy
