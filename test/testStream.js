@@ -18,7 +18,7 @@ var client = restify.createJsonClient({
 
 
 describe('nomad-live-api', function () {
-  
+
   var stream_id, password, last_beat;
 
   it('require', function () {
