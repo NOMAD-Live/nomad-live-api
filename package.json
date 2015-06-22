@@ -8,6 +8,7 @@
     "type": "git",
     "url": "https://github.com/nomad-live/nomad-live-api.git"
   },
+  "license": "GPL-3.0",
   "dependencies": {
     "cine-io": "~0.2.1",
     "restify": "~3.0.0"
