@@ -1,6 +1,9 @@
 {
   "name": "nomad-live-api",
   "main": "server.js",
+  "config": {
+    "port": "4243"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/nomad-live/nomad-live-api.git"
@@ -17,6 +20,7 @@
   "scripts": {
     "start": "node server.js",
     "test": "./node_modules/mocha/bin/mocha",
-    "deploy": "git remote add production ubuntu@api.nomadlive.tv:/home/ubuntu/nomad-live-api.git && git push production;"
+    "deploy": "git push production",
+    "fresh-deploy": "git remote add production ubuntu@api.nomadlive.tv:/home/ubuntu/nomad-live-api.git && git push production;"
   }
 }

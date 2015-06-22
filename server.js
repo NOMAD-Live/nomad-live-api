@@ -1,7 +1,7 @@
 'use strict';
 
 var restify = require('restify');
-var api = require('./api-v1');
+var api = require('./src/api-v1');
 
 var server = restify.createServer({
   name: 'nomad-live-api',
@@ -35,7 +35,7 @@ server.get('/stream/:stream_id', api.get_stream);
 server.post('/stream/:stream_id', api.heartbeat);
 server.del('/stream/:stream_id', api.destroy_stream);
 
-server.listen(4242, function () {
+server.listen(process.env.npm_package_config_port, function () {
   console.log('%s listening at %s', server.name, server.url);
   api.sync();
 });

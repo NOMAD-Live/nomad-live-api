@@ -4,9 +4,15 @@ var restify = require('restify');
 var CineIO = require('cine-io');
 
 try {
-  var conf = require('./secrets.json');
+  var conf = require('../secrets.json');
 } catch (e) {
-  var conf = {secretKey: process.env.CINE_IO_SECRET_KEY};
+  if (process.env.CINE_IO_SECRET_KEY) {
+    var conf = {secretKey: process.env.CINE_IO_SECRET_KEY};
+  } else {
+    console.log("Add CINE_IO_SECRET_KEY to you environnement variables,");
+    console.log("or create a secrets.json file like the following:");
+    console.log("{'secretKey': 'THE_CINE_IO_SECRET_KEY'}");
+  }
 }
 
 var client = CineIO.init(conf);

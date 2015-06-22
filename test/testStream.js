@@ -12,7 +12,7 @@ var server = require('../server');
 // Client
 var client = restify.createJsonClient({
   // url: 'http://localhost:6969/api/v0/', // Api endpoint
-  url: 'http://localhost:4242',
+  url: 'http://localhost:' + process.env.npm_package_config_port,
   version: '~1.0'
 });
 
