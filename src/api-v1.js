@@ -121,7 +121,7 @@ exports.get_stream = function (req, res, next) {
   } else {
 
     console.log("[Get] error:not-in-cache " + id);
-    res.json(204, {msg: "Stream not in cache."});
+    res.json(204, {code: "204", message: "Stream not in cache."});
   }
   next();
 }
@@ -177,7 +177,7 @@ exports.create_stream = function (req, res, next) {
   } else {
 
     console.log("[Create] error:capped " + Storage.size());
-    res.json(406, { msg: "Streams exhausted. " + progress });
+    res.json(406, { code: "406", message: "Streams exhausted. " + progress });
   }
   
   next();
@@ -212,12 +212,12 @@ exports.destroy_stream = function (req, res, next) {
     } else {
 
       console.log("[Delete] error:wrong-password " + id);
-      res.json(401, {msg: "Wrong password."});
+      res.json(401, {code: "401", message: "Wrong password."});
     }
   } else {
 
     console.log("[Delete] error:not-in-cache " + id);
-    res.json(204, {msg: "Stream not in cache."});
+    res.json(204, {code: "204", message: "Stream not in cache."});
   }
   next();
 }
@@ -245,12 +245,12 @@ exports.heartbeat = function (req, res, next) {
     } else {
 
       console.log("[Beat] error:wrong-password " + id);
-      res.json(401, {msg: "Wrong password."});
+      res.json(401, { code: "401", message: "Wrong password."});
     }
   } else {
 
     console.log("[Beat] error:not-in-cache " + id);
-    res.json(204, {msg: "Stream not in cache."});
+    res.json(204, { code: "204", message: "Stream not in cache."});
   }
   next();
 }
