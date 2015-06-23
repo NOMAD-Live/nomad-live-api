@@ -23,6 +23,6 @@
     "dev-start": "node server.js 8080 || nodejs server.js 8080",
     "test": "./node_modules/mocha/bin/mocha",
     "deploy": "git push production",
-    "fresh-deploy": "git remote add production ubuntu@api.nomadlive.tv:/home/ubuntu/nomad-live-api.git && git push production master; git push;"
+    "fresh-deploy": "git remote add production ubuntu@api.nomadlive.tv:/home/ubuntu/nomad-live-api.git && git push production master; git push production;"
   }
 }
