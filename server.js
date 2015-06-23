@@ -9,11 +9,13 @@ var server = restify.createServer({
   version: '1.0.0'
 });
 
-var port = process.argv[2] || process.env.npm_package_config_port;
+var port = process.argv[2];
 
 // Checks that the port is an int and within a valid range.
-assert.ok(1 <= port && port <= 65535,
-  'Port "' + port + '" is not within range (0-65536).');
+if (!(1 <= port && port <= 65535)) {
+  console.log('Port "' + port + '" is not within range (0-65536).');
+  port = process.env.npm_package_config_port;
+}
 
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.authorizationParser());
