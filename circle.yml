@@ -3,3 +3,7 @@ deployment:
     branch: production
     commands:
       - npm run fresh-deploy
+  master:
+    branch: master
+    commands:
+      - npm run fresh-deploy
