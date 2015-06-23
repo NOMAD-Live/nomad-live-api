@@ -33,8 +33,25 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
+  /streams/clean:
+    get:
+      summary: Clean Streams
+      description: |
+        Destroys all the Streams that did not report in the last 15 seconds.
+      tags:
+        - Heartbeat
+        - Streams
+      responses:
+        200:
+          description: A Heartbeat object including the Streams to destroy.
+          schema:
+            $ref: '#/definitions/Heartbeats'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
 
-  /stream/sync:
+  /streams/sync:
     get:
       summary: Synchronise Streams
       description: |

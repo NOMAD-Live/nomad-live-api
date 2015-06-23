@@ -87,11 +87,11 @@ exports.get_old = function (seconds) {
   var valid_time = new Date(now - ttl);
   var output = [];
 
-  for (var item in _storage) {
+  for (var id in _storage) {
 
-    var beat = _storage[item].last_beat;
+    var beat = _storage[id].last_beat;
     if (beat < valid_time) {
-      output.push(item);
+      output.push({ id: id, last_beat: beat });
     }
   }
 

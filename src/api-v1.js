@@ -49,12 +49,18 @@ exports.clean_streams = function (req, res, next) {
 
     console.log("[Clean] deleting... " + item);
 
-    client.streams.destroy(item, function (err, stream) {
+    client.streams.destroy(item.id, function (err, stream) {
    
       if (!err) {
-        Storage.destroy(item);
+
+        Storage.destroy(item.id);
         destroyed.push(item);
         console.log("[Clean] deleted " + item);
+
+      } else {
+
+        console.log("[Clean] error:cine-io");
+        console.log(err);
       }
       
     });
@@ -62,10 +68,10 @@ exports.clean_streams = function (req, res, next) {
   
   if (to_destroy.length === 0) {
     console.log("[Clean] nothing to do");
-    res.json(304, {deleting:to_destroy});  
+    res.json(304, to_destroy);  
   }
   
-  res.json(202, {deleting:to_destroy});  
+  res.json(202, to_destroy);  
   next();
 }
 
