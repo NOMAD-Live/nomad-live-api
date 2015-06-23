@@ -8,6 +8,9 @@ var server = restify.createServer({
   version: '1.0.0'
 });
 
+var port = process.argv[2] || process.env.npm_package_config_port;
+
+
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.authorizationParser());
 server.use(restify.queryParser({ mapParams: true }));
@@ -39,7 +42,7 @@ server.get('/stream/:stream_id', api.get_stream);
 server.post('/stream/:stream_id', api.heartbeat);
 server.del('/stream/:stream_id', api.destroy_stream);
 
-server.listen(process.env.npm_package_config_port, function () {
+server.listen(port, function () {
   console.log('%s listening at %s', server.name, server.url);
   api.sync();
 });
