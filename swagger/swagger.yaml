@@ -5,7 +5,7 @@ info:
   description: 'Share the action, be the motion.'
   version: '0.1.0'
 # Domain of the service
-host: localhost:4243
+host: api.nomadlive.tv
 # Array of all schemes that the API supports
 schemes:
   - http
