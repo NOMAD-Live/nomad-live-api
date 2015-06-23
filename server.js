@@ -1,6 +1,7 @@
 'use strict';
 
 var restify = require('restify');
+var assert = require('assert');
 var api = require('./src/api-v1');
 
 var server = restify.createServer({
@@ -10,6 +11,8 @@ var server = restify.createServer({
 
 var port = process.argv[2] || process.env.npm_package_config_port;
 
+// Checks that the port is an int and within a valid range.
+assert.ok(1 <= port && port <= 65535, 'Port given is not within range.');
 
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.authorizationParser());
