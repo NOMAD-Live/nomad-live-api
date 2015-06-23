@@ -1,0 +1,294 @@
+# this is a draft of the NOMAD Live API
+swagger: '2.0'
+info:
+  title: NOMAD Live API
+  description: 'Share the action, be the motion.'
+  version: '1.0.0'
+# Domain of the service
+host: localhost:8000
+# Array of all schemes that the API supports
+schemes:
+  - https
+  - http
+# Prefixed to all paths
+basePath: /v1
+produces:
+  - application/json
+paths:
+
+  /streams:
+    post:
+      summary: Create a New Stream
+      description: |
+        Blabla.
+      parameters:
+
+        - name: name
+          in: query
+          description: Friendly Name of the new stream.
+          required: false
+          type: string
+
+        - name: description
+          in: query
+          description: A friendly description of the new stream.
+          required: false
+          type: string
+
+        - name: tags
+          in: query
+          description: A csv array of tags relevant to the stream.
+          required: false
+          type: array
+          collectionFormat: csv
+          items:
+            type: string
+
+        - name: extra_info
+          in: query
+          description: Some more info as `json`.
+          required: false
+          type: string
+
+      tags:
+        - Streams
+      responses:
+        201:
+          description: A Stream object including the stream_id.
+          schema:
+            $ref: '#/definitions/Stream'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    get:
+      summary: Stream Informations List
+      description: |
+        Get information on existing streams.
+        Needs at least a username, a user_id, or a stream_id.
+      parameters:
+
+        - name: stream_id
+          in: query
+          description: IDs of the requested streams (csv).
+          required: false
+          type: array
+          collectionFormat: csv
+          items:
+            type: string
+
+      tags:
+        - Streams
+      responses:
+        200:
+          description: An array of Streams.
+          schema:
+            $ref: '#/definitions/Streams'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+  /stream/{stream_id}:
+    get:
+      summary: Get Info on a Stream
+      description: |
+        Gives information on a single Stream.
+      parameters:
+
+        - name: stream_id
+          in: path
+          description: ID of the desired stream.
+          required: true
+          type: string
+
+      tags:
+        - Streams
+      responses:
+        201:
+          description: A Stream object including the stream_id.
+          schema:
+            $ref: '#/definitions/Stream'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+    put:
+      summary: Get Info on a Stream
+      description: |
+        Gives information on a single Stream.
+      parameters:
+
+        - name: stream_id
+          in: path
+          description: ID of the desired Stream.
+          required: true
+          type: string
+
+        - name: name
+          in: query
+          description: New friendly name of the Stream.
+          required: false
+          type: string
+
+        - name: description
+          in: query
+          description: New friendly description of the Stream.
+          required: false
+          type: string
+
+        - name: tags
+          in: query
+          description: New tags relevant to the Stream.
+          required: false
+          type: array
+          collectionFormat: csv
+          items:
+            type: string
+
+      tags:
+        - Streams
+      responses:
+        201:
+          description: A Stream object of the updated Stream.
+          schema:
+            $ref: '#/definitions/Stream'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    delete:
+      summary: Delete a Stream
+      description: |
+        Get information on existing streams.
+        Needs at least a username, a user_id, or a stream_id.
+      parameters:
+
+        - name: stream_id
+          in: path
+          description: ID of the stream you want to delete.
+          required: true
+          type: string
+
+      tags:
+        - Streams
+      responses:
+        200:
+          description: The deleted Stream object.
+          schema:
+            $ref: '#/definitions/Stream'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+  /search/streams:
+    get:
+      summary: Stream Search
+      description: |
+        Get streams matching the query.
+        Uses the geo-location of the user if none.
+      parameters:
+
+        - name: q
+          in: query
+          description: Query the streams should match.
+          allowEmptyValue: true
+          required: true
+          type: string
+
+        - name: page
+          in: query
+          description: Page to get from the requested query.
+          required: false
+          type: integer
+
+        - name: fields
+          in: query
+          description: Specify fields to return in the reply.
+          required: false
+          type: string
+
+        - name: sort
+          in: query
+          description: Specify how to sort the reply.
+          required: false
+          type: string
+
+      tags:
+        - Streams
+      responses:
+        200:
+          description: An array of streams.
+          schema:
+            $ref: '#/definitions/Streams'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+
+definitions:
+
+  Stream:
+    properties:
+      stream_id:
+        type: string
+        description: Unique identifier representing a specific stream.
+      description:
+        type: string
+        description: Friendly description of stream.
+      name:
+        type: string
+        description: Friendly display name of stream.
+      rtmp_url:
+        type: string
+        description: RTMP url to view the stream.
+      hls_url:
+        type: string
+        description: HLS url to view the stream.
+      publish:
+        type: string
+        description: Image URL representing the product.
+      record:
+        type: boolean
+        description: Wether or not to record the stream.
+      live:
+        type: boolean
+        description: Wether or not the stream is live.
+
+  Streams:
+    properties:
+      offset:
+        type: integer
+        format: int32
+        description: Position in pagination.
+      limit:
+        type: integer
+        format: int32
+        description: Number of items to retrieve (100 max).
+      count:
+        type: integer
+        format: int32
+        description: Total number of items available.
+      streams:
+        type: array
+        items:
+          $ref: '#/definitions/Stream'
+
+  Error:
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string

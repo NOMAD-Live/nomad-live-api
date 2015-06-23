@@ -3,15 +3,14 @@ swagger: '2.0'
 info:
   title: NOMAD Live API
   description: 'Share the action, be the motion.'
-  version: '1.0.0'
+  version: '0.1.0'
 # Domain of the service
-host: localhost:8000
+host: api.nomadlive.tv:80
 # Array of all schemes that the API supports
 schemes:
-  - https
   - http
 # Prefixed to all paths
-basePath: /v1
+basePath: /
 produces:
   - application/json
 paths:
@@ -20,35 +19,7 @@ paths:
     post:
       summary: Create a New Stream
       description: |
-        Blabla.
-      parameters:
-
-        - name: name
-          in: query
-          description: Friendly Name of the new stream.
-          required: false
-          type: string
-
-        - name: description
-          in: query
-          description: A friendly description of the new stream.
-          required: false
-          type: string
-
-        - name: tags
-          in: query
-          description: A csv array of tags relevant to the stream.
-          required: false
-          type: array
-          collectionFormat: csv
-          items:
-            type: string
-
-        - name: extra_info
-          in: query
-          description: Some more info as `json`.
-          required: false
-          type: string
+        The endpoint to create a new stream.
 
       tags:
         - Streams
@@ -65,19 +36,7 @@ paths:
     get:
       summary: Stream Informations List
       description: |
-        Get information on existing streams.
-        Needs at least a username, a user_id, or a stream_id.
-      parameters:
-
-        - name: stream_id
-          in: query
-          description: IDs of the requested streams (csv).
-          required: false
-          type: array
-          collectionFormat: csv
-          items:
-            type: string
-
+        Get the full list of existing streams.
       tags:
         - Streams
       responses:
@@ -90,6 +49,23 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
+
+  /stream/sync:
+    get:
+      summary: Synchronise Streams
+      description: |
+        Synchronise the cached Streams with Cine.IO.
+      tags:
+        - Streams
+      responses:
+        200:
+          description: A Heartbeat object including the stream_id and the last_beat.
+          schema:
+            $ref: '#/definitions/Heartbeat'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
 
   /stream/{stream_id}:
     get:
@@ -108,7 +84,7 @@ paths:
         - Streams
       responses:
         201:
-          description: A Stream object including the stream_id.
+          description: A Stream object including the stream_id and the password.
           schema:
             $ref: '#/definitions/Stream'
         default:
@@ -116,47 +92,38 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
-
-    put:
-      summary: Get Info on a Stream
+    post:
+      summary: Heartbeat a Stream
       description: |
-        Gives information on a single Stream.
+        Gives a signal to the server to prevent the stream from deletion.
       parameters:
 
         - name: stream_id
           in: path
-          description: ID of the desired Stream.
+          description: ID of the stream you want to signal.
           required: true
           type: string
 
-        - name: name
+        - name: p
           in: query
-          description: New friendly name of the Stream.
+          description: Password protecting the stream.
           required: false
           type: string
 
-        - name: description
+        - name: password
           in: query
-          description: New friendly description of the Stream.
+          description: Password protecting the stream.
           required: false
           type: string
-
-        - name: tags
-          in: query
-          description: New tags relevant to the Stream.
-          required: false
-          type: array
-          collectionFormat: csv
-          items:
-            type: string
 
       tags:
         - Streams
+        - Heartbeat
       responses:
-        201:
-          description: A Stream object of the updated Stream.
+        200:
+          description: The deleted Stream object.
           schema:
-            $ref: '#/definitions/Stream'
+            $ref: '#/definitions/Heartbeat'
         default:
           description: Unexpected error
           schema:
@@ -166,13 +133,26 @@ paths:
       summary: Delete a Stream
       description: |
         Get information on existing streams.
-        Needs at least a username, a user_id, or a stream_id.
+        The password should be in the query with either
+        the variable p or the variable password.
       parameters:
 
         - name: stream_id
           in: path
           description: ID of the stream you want to delete.
           required: true
+          type: string
+
+        - name: p
+          in: query
+          description: Password to destroy the stream.
+          required: false
+          type: string
+
+        - name: password
+          in: query
+          description: Password to destroy the stream.
+          required: false
           type: string
 
       tags:
@@ -188,107 +168,62 @@ paths:
             $ref: '#/definitions/Error'
 
 
-  /search/streams:
-    get:
-      summary: Stream Search
-      description: |
-        Get streams matching the query.
-        Uses the geo-location of the user if none.
-      parameters:
-
-        - name: q
-          in: query
-          description: Query the streams should match.
-          allowEmptyValue: true
-          required: true
-          type: string
-
-        - name: page
-          in: query
-          description: Page to get from the requested query.
-          required: false
-          type: integer
-
-        - name: fields
-          in: query
-          description: Specify fields to return in the reply.
-          required: false
-          type: string
-
-        - name: sort
-          in: query
-          description: Specify how to sort the reply.
-          required: false
-          type: string
-
-      tags:
-        - Streams
-      responses:
-        200:
-          description: An array of streams.
-          schema:
-            $ref: '#/definitions/Streams'
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-
-
-
 definitions:
 
   Stream:
     properties:
-      stream_id:
+      id:
         type: string
         description: Unique identifier representing a specific stream.
-      description:
-        type: string
-        description: Friendly description of stream.
-      name:
+      streamName:
         type: string
         description: Friendly display name of stream.
-      rtmp_url:
-        type: string
-        description: RTMP url to view the stream.
-      hls_url:
-        type: string
-        description: HLS url to view the stream.
+      play:
+        properties:
+          hls:
+            type: string
+            description: HLS url to read the stream from.
+          rtmp:
+            type: string
+            description: RTMP url to read the stream from.
       publish:
+        properties:
+          url:
+            type: string
+            description: RTMP url to broadcast the stream to.
+          stream:
+            type: string
+            description: Stream name with its password (m15vuUK-e?music59).
+      password:
         type: string
-        description: Image URL representing the product.
+        description: the password preventing anyone to broadcast.
+      expiration:
+        type: string
+        description: 'A date with the following format : 2035-06-21T00:00:00.000Z'
       record:
         type: boolean
         description: Wether or not to record the stream.
-      live:
-        type: boolean
-        description: Wether or not the stream is live.
+      assignedAt:
+        type: string
+        description: 'A date with the following format : 2015-06-21T22:09:35.920Z'
 
   Streams:
+    type: array
+    items:
+      $ref: '#/definitions/Stream'
+
+  Heartbeat:
     properties:
-      offset:
-        type: integer
-        format: int32
-        description: Position in pagination.
-      limit:
-        type: integer
-        format: int32
-        description: Number of items to retrieve (100 max).
-      count:
-        type: integer
-        format: int32
-        description: Total number of items available.
-      streams:
-        type: array
-        items:
-          $ref: '#/definitions/Stream'
+      id:
+        type: string
+        description: Unique identifier representing a specific stream.
+      last_beat:
+        type: number
+        description: Last time the stream was seen (Date.now()).
 
   Error:
     properties:
       code:
-        type: integer
-        format: int32
-      message:
         type: string
-      fields:
+      message:
         type: string
