@@ -1,5 +1,8 @@
 # nomad-live-api
+
+<img src="http://online.swagger.io/validator?url=https://rawgit.com/NOMAD-Live/nomad-live-api/master/swagger/swagger.yaml">
 ================
+
 This repository is setup with Circle CI. Everytime you push a new update onto the `production` branch, the code goes live.
 
 All those endpoints have been inspired from the Twitter API.
