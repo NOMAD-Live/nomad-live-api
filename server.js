@@ -25,6 +25,10 @@ server.use(restify.throttle({
 }));
 server.use(restify.conditionalRequest());
 
+// Allows CORS
+server.use(restify.CORS());
+server.use(restify.fullResponse());
+
 server.post('/streams', api.create_stream);
 server.get('/streams', api.get_streams);
 server.get('/streams/sync', api.sync_cache);

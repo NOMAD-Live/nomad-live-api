@@ -5,7 +5,7 @@ info:
   description: 'Share the action, be the motion.'
   version: '0.1.0'
 # Domain of the service
-host: api.nomadlive.tv:80
+host: localhost:4243
 # Array of all schemes that the API supports
 schemes:
   - http
@@ -16,22 +16,6 @@ produces:
 paths:
 
   /streams:
-    post:
-      summary: Create a New Stream
-      description: |
-        The endpoint to create a new stream.
-
-      tags:
-        - Streams
-      responses:
-        201:
-          description: A Stream object including the stream_id.
-          schema:
-            $ref: '#/definitions/Stream'
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
 
     get:
       summary: Stream Informations List
@@ -61,7 +45,7 @@ paths:
         200:
           description: A Heartbeat object including the stream_id and the last_beat.
           schema:
-            $ref: '#/definitions/Heartbeat'
+            $ref: '#/definitions/Heartbeats'
         default:
           description: Unexpected error
           schema:
@@ -219,7 +203,12 @@ definitions:
         description: Unique identifier representing a specific stream.
       last_beat:
         type: number
-        description: Last time the stream was seen (Date.now()).
+        description: Last time the broadcaster reported (Date.now()).
+
+  Heartbeats:
+    type: array
+    items:
+      $ref: '#/definitions/Heartbeat'
 
   Error:
     properties:
