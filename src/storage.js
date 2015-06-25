@@ -9,9 +9,7 @@ exports.sync = function (streams) {
 
     if (!_storage.hasOwnProperty(s.id)) {
 
-      // Generates a random password (Needed for heartbeat)
-      var password = Math.random().toString(36).substr(2, 5);
-      exports.add(s, password);
+      exports.add(s, s.password);
 
     } else {
       // Stream is already cached
@@ -43,7 +41,7 @@ exports.get = function (id) {
 
     console.log("[Storage] get:absent " + id);
   }
-  return _storage[id];
+  return _storage[id].stream;
 };
 
 exports.destroy = function (id) {

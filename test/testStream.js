@@ -95,7 +95,9 @@ describe('stream (valid path)', function () {
 
       assert.ifError(err);
 
-      assert.ok(obj.id, stream_id);
+      console.log(obj);
+
+      assert.equal(obj.id, stream_id);
 
       done();
     });
@@ -105,7 +107,7 @@ describe('stream (valid path)', function () {
     client.get('/streams', function (err, req, res, obj) {
 
       assert.ifError(err);
-      
+
       assert.ok(Array.isArray(obj));
 
       done();
@@ -116,7 +118,7 @@ describe('stream (valid path)', function () {
     client.get('/streams', function (err, req, res, obj) {
 
       assert.ifError(err);
-      
+
       var size_in_header = res.header('X-Stream-Count');
       assert.equal(obj.length, size_in_header);
 
@@ -131,7 +133,7 @@ describe('stream (valid path)', function () {
     client.get('/streams', function (err, req, res, obj) {
 
       assert.ifError(err);
-      
+
       var filtered = obj.filter(function (item) {
         return item.id === stream_id;
       });
@@ -178,11 +180,11 @@ describe('stream (error path)', function () {
   before(function (done){
 
     client.post('/streams', function (err, req, res, obj) {
- 
+
       stream_id = obj.id;
       password = obj.password;
       last_beat = obj.last_beat;
- 
+
       done();
     });
   });

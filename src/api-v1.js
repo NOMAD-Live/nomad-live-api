@@ -122,7 +122,7 @@ exports.get_stream = function (req, res, next) {
   if (Storage.has(id)) {
 
     console.log("[Get] done " + id);
-    res.json(200, Storage.get(id).stream);
+    res.json(200, Storage.get(id));
 
   } else {
 
