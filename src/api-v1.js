@@ -134,12 +134,7 @@ exports.get_stream = function (req, res, next) {
 
 exports.create_stream = function (req, res, next) {
 
-  var password = req.params.password;
-
-  if (!password) {
-    // Generates a random password (Needed for heartbeat)
-    password = Math.random().toString(36).substr(2, 5);
-  }
+  var custom_password = req.params.password;
 
   var current_size = Storage.size();
 
@@ -155,20 +150,22 @@ exports.create_stream = function (req, res, next) {
 
       if (!err) {
 
+        // Allows for custom password.
+        var password = custom_password || stream.password;
+
         Storage.add(stream, password, function (last_beat) {
 
-          var url = stream.id + "?p=" + password;
+          stream.password = password;
+          stream.last_beat = last_beat;
+
+          var url = stream.id + "?p=" + stream.password;
 
           console.log("[Create] done " + url);
 
           res.header('X-Stream-Count', current_size + 1);
           res.header('X-Stream-Count-Limit', STREAM_COUNT_LIMIT);
 
-          res.json(200, {
-            id: stream.id,
-            password: password,
-            last_beat: last_beat
-          });
+          res.json(200, stream);
         });
 
       } else {
