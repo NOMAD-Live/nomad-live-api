@@ -36,7 +36,7 @@ exports.sync = function () {
       console.log(err);
     }
   });
-}
+};
 
 exports.clean_streams = function (req, res, next) {
 
@@ -50,7 +50,7 @@ exports.clean_streams = function (req, res, next) {
     console.log("[Clean] deleting... " + item);
 
     client.streams.destroy(item.id, function (err, stream) {
-   
+
       if (!err) {
 
         Storage.destroy(item.id);
@@ -62,18 +62,18 @@ exports.clean_streams = function (req, res, next) {
         console.log("[Clean] error:cine-io");
         console.log(err);
       }
-      
+
     });
   });
-  
+
   if (to_destroy.length === 0) {
     console.log("[Clean] nothing to do");
-    res.json(304, to_destroy);  
+    res.json(304, to_destroy);
   }
-  
-  res.json(202, to_destroy);  
+
+  res.json(202, to_destroy);
   next();
-}
+};
 
 exports.sync_cache = function (req, res, next) {
 
@@ -98,7 +98,7 @@ exports.sync_cache = function (req, res, next) {
     }
     next();
   });
-}
+};
 
 exports.get_streams = function (req, res, next) {
 
@@ -108,10 +108,10 @@ exports.get_streams = function (req, res, next) {
   res.header('X-Stream-Count', all.length);
   res.header('X-Stream-Count-Limit', STREAM_COUNT_LIMIT);
   res.json(200, all);
-  
+
   console.log("[Get] done all");
   next();
-}
+};
 
 exports.get_stream = function (req, res, next) {
 
@@ -130,7 +130,7 @@ exports.get_stream = function (req, res, next) {
     res.json(204, {code: "204", message: "Stream not in cache."});
   }
   next();
-}
+};
 
 exports.create_stream = function (req, res, next) {
 
@@ -175,7 +175,7 @@ exports.create_stream = function (req, res, next) {
 
         console.log("[Create] error:cine-io " + id);
         console.log(err);
-        
+
         res.json(503, { stream_id: id });
       }
     });
@@ -185,9 +185,9 @@ exports.create_stream = function (req, res, next) {
     console.log("[Create] error:capped " + Storage.size());
     res.json(406, { code: "406", message: "Streams exhausted. " + progress });
   }
-  
+
   next();
-}
+};
 
 exports.destroy_stream = function (req, res, next) {
 
@@ -201,7 +201,7 @@ exports.destroy_stream = function (req, res, next) {
     var good_pass = Storage.get(id).password
 
     console.log("[Delete] " + good_pass + "==" + pass + " ?");
-    
+
     if (pass === good_pass) {
 
       console.log("[Delete] deleting... " + id);
@@ -209,7 +209,7 @@ exports.destroy_stream = function (req, res, next) {
       client.streams.destroy(id, function (err, stream) {
 
         Storage.destroy(id);
-        
+
         console.log("[Delete] done " + id);
 
         res.json(200, stream);
@@ -226,28 +226,28 @@ exports.destroy_stream = function (req, res, next) {
     res.json(204, {code: "204", message: "Stream not in cache."});
   }
   next();
-}
+};
 
 exports.heartbeat = function (req, res, next) {
 
   var id = req.params.stream_id;
   var pass = req.params.password || req.params.p;
-  
+
   console.log("[Beat] beating... " + id);
 
   if (Storage.has(id)) {
 
     var stream = Storage.get(id);
     var good_pass = stream.password;
-    
+
     if (good_pass === pass) {
 
       var last_beat = Storage.beat(id, Date.now());
-      
+
       console.log("[Beat] done " + last_beat);
 
       res.json(200, { id: id, last_beat: last_beat });
-      
+
     } else {
 
       console.log("[Beat] error:wrong-password " + id);
@@ -259,7 +259,7 @@ exports.heartbeat = function (req, res, next) {
     res.json(204, { code: "204", message: "Stream not in cache."});
   }
   next();
-}
+};
 
 exports.get_stream_from_cineio = function (req, res, next) {
 
@@ -288,10 +288,10 @@ exports.get_stream_from_cineio = function (req, res, next) {
 
       console.log("[Get] error:cine-io " + id);
       console.log(err);
-      
+
       res.json(503, { stream_id: id });
     }
 
     next();
   });
-}
+};

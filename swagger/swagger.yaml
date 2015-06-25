@@ -33,6 +33,22 @@ paths:
           schema:
             $ref: '#/definitions/APIError'
 
+    post:
+      summary: Create a New Stream
+      description: |
+        The endpoint to create a new stream.
+      tags:
+        - Streams
+      responses:
+        201:
+          description: A Stream object including the stream_id.
+          schema:
+            $ref: '#/definitions/Stream'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/APIError'
+
   /streams/clean:
     get:
       summary: Clean Streams

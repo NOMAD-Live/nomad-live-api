@@ -19,7 +19,7 @@ exports.sync = function (streams) {
   });
 
   console.log("[Storage] sync:done");
-}
+};
 
 exports.add = function (stream, password, next) {
 
@@ -35,7 +35,7 @@ exports.add = function (stream, password, next) {
   if (typeof(next) == 'function') {
     next(last_beat);
   }
-}
+};
 
 exports.get = function (id) {
 
@@ -44,12 +44,12 @@ exports.get = function (id) {
     console.log("[Storage] get:absent " + id);
   }
   return _storage[id];
-}
+};
 
 exports.destroy = function (id) {
   delete _storage[id];
   console.log("[Storage] destroy:done " + id);
-}
+};
 
 exports.beat = function (id, timestamp) {
 
@@ -57,11 +57,11 @@ exports.beat = function (id, timestamp) {
   _storage[id].last_beat = timestamp;
 
   return last_beat;
-}
+};
 
 exports.has = function (id) {
   return _storage.hasOwnProperty(id);
-}
+};
 
 exports.get_all = function () {
   var output = [], temp;
@@ -75,7 +75,7 @@ exports.get_all = function () {
 
   console.log("[Storage] getall:done " + output);
   return output;
-}
+};
 
 /*
  * Gets all streams older than X seconds.
@@ -96,9 +96,8 @@ exports.get_old = function (seconds) {
   }
 
   return output;
-}
+};
 
 exports.size = function () {
   return Object.keys(_storage).length;
-}
-
+};
