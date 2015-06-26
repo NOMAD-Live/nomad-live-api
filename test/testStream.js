@@ -123,7 +123,7 @@ describe('stream (valid path)', function () {
       assert.equal(obj.length, size_in_header);
 
       var limit_in_header = res.header('X-Stream-Count-Limit');
-      assert.equal(3, limit_in_header);
+      assert.equal(5, limit_in_header);
 
       done();
     });
