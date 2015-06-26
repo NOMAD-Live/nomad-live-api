@@ -21,7 +21,7 @@ var Storage = require('./storage');
 var exports = module.exports;
 
 
-var STREAM_COUNT_LIMIT = 3;
+var STREAM_COUNT_LIMIT = 5;
 var STREAM_EXPIRATION_TIME = 15; // In seconds
 
 exports.sync = function () {
@@ -38,7 +38,18 @@ exports.sync = function () {
   });
 };
 
-exports.clean_streams = function (req, res, next) {
+exports.auto_clean = function () {
+
+  console.log("[AutoClean] Cleaning...");
+  var to_destroy = exports.clean();
+  console.log("[AutoClean] done " + to_destroy);
+
+  var clean_every = STREAM_EXPIRATION_TIME * 1000;
+
+  setTimeout(exports.auto_clean, clean_every);
+}
+
+exports.clean = function () {
 
   console.log("[Clean] cleaning older than " + STREAM_EXPIRATION_TIME + "s...");
 
@@ -66,12 +77,23 @@ exports.clean_streams = function (req, res, next) {
     });
   });
 
+  return to_destroy;
+}
+
+exports.clean_streams = function (req, res, next) {
+
+  console.log("[ManualClean] Cleaning...");
+  
+  var to_destroy = exports.clean();
+
   if (to_destroy.length === 0) {
-    console.log("[Clean] nothing to do");
+    console.log("[ManualClean] nothing to do");
     res.json(304, to_destroy);
+  } else {
+    res.json(202, to_destroy);
+    console.log("[ManualClean] done " + to_destroy);
   }
 
-  res.json(202, to_destroy);
   next();
 };
 

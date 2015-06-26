@@ -51,4 +51,5 @@ server.del('/stream/:stream_id', api.destroy_stream);
 server.listen(port, function () {
   console.log('%s listening at %s', server.name, server.url);
   api.sync();
+  api.auto_clean();
 });
