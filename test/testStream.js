@@ -41,10 +41,11 @@ describe('nomad-live-api', function () {
     });
   });
 
-  it('get root page should fail', function (done) {
+  it('root page should contain name and version', function (done) {
     client.get('/', function (err, req, res, obj) {
 
-      assert.notEqual(err.statusCode, 200);
+      assert.ok(obj.name);
+      assert.ok(obj.version);
 
       done();
     });

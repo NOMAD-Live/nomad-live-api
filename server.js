@@ -4,10 +4,12 @@ var restify = require('restify');
 var assert = require('assert');
 var api = require('./src/api-v1');
 
-var server = restify.createServer({
+var SERVER_SETUP = {
   name: 'nomad-live-api',
-  version: '1.0.0'
-});
+  version: '1.0.1'
+};
+
+var server = restify.createServer(SERVER_SETUP);
 
 var port = process.argv[2];
 
@@ -38,6 +40,11 @@ server.use(restify.conditionalRequest());
 server.use(restify.CORS());
 server.use(restify.fullResponse());
 
+// route to display versions
+server.get('/', function (req, res) {
+  res.json(SERVER_SETUP);
+});
+
 server.post('/streams', api.create_stream);
 server.get('/streams', api.get_streams);
 server.get('/streams/sync', api.sync_cache);
@@ -51,5 +58,5 @@ server.del('/stream/:stream_id', api.destroy_stream);
 server.listen(port, function () {
   console.log('%s listening at %s', server.name, server.url);
   api.sync();
-  api.auto_clean();
+  //api.auto_clean();
 });
