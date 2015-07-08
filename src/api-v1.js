@@ -24,6 +24,10 @@ var exports = module.exports;
 var STREAM_COUNT_LIMIT = 5;
 var STREAM_EXPIRATION_TIME = 15; // In seconds
 
+
+/**
+ * Pulls the streams from cine.io to the server cache (Storage)
+ */
 exports.sync = function () {
   client.streams.index(function (err, streams) {
     if (!err) {
@@ -38,6 +42,12 @@ exports.sync = function () {
   });
 };
 
+
+/**
+ * Cleans the cache by deleting all streams older than
+ * the number of seconds specified by STREAM_EXPIRATION_TIME.
+ * It then records a new auto_clean task STREAM_EXPIRATION_TIME seconds after.
+ */
 exports.auto_clean = function () {
 
   console.log("[AutoClean] Cleaning...");
@@ -49,6 +59,12 @@ exports.auto_clean = function () {
   setTimeout(exports.auto_clean, clean_every);
 }
 
+
+/**
+ * Gets the stream from the cache whose last heartbeat was longer than
+ * STREAM_EXPIRATION_TIME seconds ago, and delete them one by one from the
+ * Cine.IO API.
+ */
 exports.clean = function () {
 
   console.log("[Clean] cleaning older than " + STREAM_EXPIRATION_TIME + "s...");
@@ -73,13 +89,16 @@ exports.clean = function () {
         console.log("[Clean] error:cine-io");
         console.log(err);
       }
-
     });
   });
 
   return to_destroy;
 }
 
+
+/**
+ * An API endpoint to trigger stream cleaning manually.
+ */
 exports.clean_streams = function (req, res, next) {
 
   console.log("[ManualClean] Cleaning...");
@@ -87,9 +106,12 @@ exports.clean_streams = function (req, res, next) {
   var to_destroy = exports.clean();
 
   if (to_destroy.length === 0) {
+
     console.log("[ManualClean] nothing to do");
     res.json(304, to_destroy);
+
   } else {
+
     res.json(202, to_destroy);
     console.log("[ManualClean] done " + to_destroy);
   }
@@ -97,6 +119,10 @@ exports.clean_streams = function (req, res, next) {
   next();
 };
 
+
+/**
+ * Pulls all streams from Cine.IO to the cache.
+ */
 exports.sync_cache = function (req, res, next) {
 
   console.log("[Sync] syncing...");
@@ -122,12 +148,17 @@ exports.sync_cache = function (req, res, next) {
   });
 };
 
+
+/**
+ * Get all streams in the cache.
+ * Also returns how many streams are free.
+ */
 exports.get_streams = function (req, res, next) {
 
   console.log("[Get] getting all...");
 
-  var all = Storage.get_all();
-  res.header('X-Stream-Count', all.length);
+  var current_size = Storage.size();
+  res.header('X-Stream-Count', current_size);
   res.header('X-Stream-Count-Limit', STREAM_COUNT_LIMIT);
   res.json(200, all);
 
@@ -135,6 +166,10 @@ exports.get_streams = function (req, res, next) {
   next();
 };
 
+
+/**
+ * Returns all informations from a given stream.
+ */
 exports.get_stream = function (req, res, next) {
 
   var id = req.params.stream_id;
@@ -154,6 +189,10 @@ exports.get_stream = function (req, res, next) {
   next();
 };
 
+
+/**
+ * Create a new stream from the Cine.IO API.
+ */
 exports.create_stream = function (req, res, next) {
 
   var custom_password = req.params.password;
@@ -195,12 +234,13 @@ exports.create_stream = function (req, res, next) {
         console.log("[Create] error:cine-io " + id);
         console.log(err);
 
-        res.json(503, { stream_id: id });
+        res.json(503, { code: 503, message: 'Could not get stream ' + id });
       }
     });
 
   } else {
 
+    // Cannot create more streams. Maximum already attained.
     console.log("[Create] error:capped " + Storage.size());
     res.json(406, { code: "406", message: "Streams exhausted. " + progress });
   }
@@ -208,6 +248,10 @@ exports.create_stream = function (req, res, next) {
   next();
 };
 
+
+/**
+ * Contacts the Cine.IO API, and deletes the given stream.
+ */
 exports.destroy_stream = function (req, res, next) {
 
   var id = req.params.stream_id;
@@ -247,6 +291,10 @@ exports.destroy_stream = function (req, res, next) {
   next();
 };
 
+
+/**
+ * Signals the server that the stream is being used.
+ */
 exports.heartbeat = function (req, res, next) {
 
   var id = req.params.stream_id;
@@ -280,6 +328,10 @@ exports.heartbeat = function (req, res, next) {
   next();
 };
 
+
+/**
+ * Gets all stream infos directly from cine.io
+ */
 exports.get_stream_from_cineio = function (req, res, next) {
 
   var id = req.params.stream_id;
@@ -300,7 +352,7 @@ exports.get_stream_from_cineio = function (req, res, next) {
       } else {
 
         console.log("[Get] error:not-found " + id);
-        res.json(204, { stream_id: id });
+        res.json(204, { code: "204", message: "Could not find stream " + id });
       }
 
     } else {
@@ -308,7 +360,7 @@ exports.get_stream_from_cineio = function (req, res, next) {
       console.log("[Get] error:cine-io " + id);
       console.log(err);
 
-      res.json(503, { stream_id: id });
+      res.json(503, { code: "503", message: "Error connecting to cine.io (" + id + ")" });
     }
 
     next();
