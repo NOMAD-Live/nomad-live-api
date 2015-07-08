@@ -157,8 +157,8 @@ exports.get_streams = function (req, res, next) {
 
   console.log("[Get] getting all...");
 
-  var current_size = Storage.size();
-  res.header('X-Stream-Count', current_size);
+  var all = Storage.get_all();
+  res.header('X-Stream-Count', all.length);
   res.header('X-Stream-Count-Limit', STREAM_COUNT_LIMIT);
   res.json(200, all);
 
